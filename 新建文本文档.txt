@@ -1,0 +1,54 @@
+axios默认发送POST数据，参数必须为键值对形式	
+键值对形式：
+methods:{
+                    sendPost(){
+                        axios.post('server.php',this.user,{
+                            transformRequest:[
+                                function(data){
+                                    let params='';
+                                    for(let index in data){
+                                        params+=index+'='+data[index]+'&';
+                                    }
+                                    return params;
+                                }
+                            ]
+                        }).then(resp=>{
+                            console.log(resp.data)
+                        }).catch(err=>{
+                            console.log('请求失败:'+err.status+','+err.statusText);
+                        });
+                    },
+                },
+//拦截器在处理完请求之后执行。。。
+Vue.http.interceptors.push(function(request, next){
+        help.showLoading = true
+        next(function (response) {
+            help.showLoading = false
+            return response
+        })
+    })
+
+//Filter过滤器的使用
+1.组件内写法
+	filters:{
+    		filter:function(data,arg1,arg2){
+        		return ....
+    		}
+	}	
+2.全局写法
+	filters('filter',function(data,arg1,arg2){
+    		retrun ....
+	})
+
+	在html中使用
+		{{ msg | filter('arg1','arg2') }}
+			// msg对应函数中的第一个参数data，arg1为第二个参数，类推
+	在methods中使用，并传参
+		methods:{
+    			fn(){
+        			let filter = this.$options.filters['filter']
+        			let data = filter(this.msg,arg1,arg2)
+    			}
+		}
+	在v-html中使用filters
+	<p v-html="$options.filters.filter(this.msg,arg1,arg2)"></p>
